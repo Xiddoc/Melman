@@ -6,9 +6,12 @@ from telegram import Update
 from telegram.ext import Application, CallbackContext, MessageHandler
 from telegram.ext import filters
 # noinspection PyProtectedMember
-from telegram.ext._utils.types import HandlerCallback, CCT, RT
+from telegram.ext._utils.types import HandlerCallback
 
-MelmanCallback = HandlerCallback[Update, CCT, RT]
+MelmanHandlerReturnType = None
+MelmanHandlerContext = CallbackContext
+MelmanCallback = HandlerCallback[Update, MelmanHandlerContext, MelmanHandlerReturnType]
+
 MelmanDecoratorWrapper = Callable[[MelmanCallback], TVObj]
 MelmanRoutes = TPath
 
@@ -56,13 +59,23 @@ class MelmanModule(MelmanRouter):
         await target(update, context)
 
     def _get_path_from_update(self, update: Update) -> str:
-        original_path = update.message.text or update.message.caption
+        """
+        Get the route we're supposed to call, given the message.
+        """
+        original_path = self._get_text_from_update(update)
 
         path_arguments = original_path.removeprefix(self.module_name).strip()
 
         first_argument, *_ = path_arguments.split(COMMAND_DELIMETER, 1)
 
         return first_argument
+
+    @staticmethod
+    def _get_text_from_update(update: Update) -> str:
+        """
+        Extract the text from the message sent.
+        """
+        return update.message.text or update.message.caption
 
     def register_module(self, telegram_app: Application) -> None:
         # logger.info(f"Registering '{self.module_name}' module")
