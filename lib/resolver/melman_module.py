@@ -36,12 +36,12 @@ class MelmanModule(MelmanRouter):
             target = self.lookup_route(self.module_name, path)
         except MelmanInvalidEndpoint:
             logger.error(f"{self.module_name}: Could not resolve '{path}'")
-            return await self.print_help(melman_update)
+            return await self.send_help_message_to_user(melman_update)
 
         logger.info(f"{self.module_name}: Resolved '{path}'")
         await target(melman_update, context)
 
-    async def print_help(self, update: MelmanUpdate) -> None:
+    async def send_help_message_to_user(self, update: MelmanUpdate) -> None:
         """
         Print the help menu to the user, if there is one.
         """

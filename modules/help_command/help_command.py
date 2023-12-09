@@ -1,3 +1,6 @@
+import re
+from typing import List, Optional
+
 from telegram.ext import ContextTypes
 
 from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
@@ -32,3 +35,24 @@ async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     await MelmanMDHelp(help_text).send_help_message(update)
 
+
+# noinspection PyUnusedFunction
+@help_cmd.route(re.compile(r".+"))
+async def get_specific_command_help(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> None:
+    from modules import MELMAN_MODULES
+
+    module = get_module_by_name(update.get_path(), MELMAN_MODULES)
+
+    if not module:
+        await update.message.reply_text("No command inputted.")
+        return
+
+    await module.send_help_message_to_user(update)
+
+
+def get_module_by_name(module_name: str, modules: List[MelmanModule]) -> Optional[MelmanModule]:
+    for module in modules:
+        if module.module_name == module_name:
+            return module
+
+    return None
