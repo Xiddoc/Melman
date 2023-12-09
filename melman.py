@@ -1,3 +1,4 @@
-from melman import arg_handling
+from lib import arg_handling
 
-arg_handling.handle_args()
+if __name__ == '__main__':
+    arg_handling.handle_args()
