@@ -16,12 +16,13 @@ class MelmanHelp:
         self.help_txt = help_txt
         self.text_type = text_type
 
-    def send_help_message(self, update: MelmanUpdate) -> None:
+    async def send_help_message(self, update: MelmanUpdate) -> None:
         """
         Send the help message to the user.
         """
         reply_function = getattr(update.message, self._get_reply_function_name())
-        reply_function(self.help_txt)
+
+        await reply_function(self.help_txt)
 
     def _get_reply_function_name(self) -> str:
         """
@@ -33,8 +34,17 @@ class MelmanHelp:
 
 
 class MelmanMDHelp(MelmanHelp):
+    BLACKLIST = ['#', '.', '>', '<', '-', '!']
+
     def __init__(self, help_txt: str):
-        super().__init__(help_txt, MelmanHelpTextType.MD)
+        super().__init__(self._escape_md(help_txt), MelmanHelpTextType.MD)
+
+    @classmethod
+    def _escape_md(cls, message: str) -> str:
+        for blacklisted_char in cls.BLACKLIST:
+            message = message.replace(blacklisted_char, '\\' + blacklisted_char)
+
+        return message
 
 
 class MelmanTextHelp(MelmanHelp):

@@ -36,19 +36,19 @@ class MelmanModule(MelmanRouter):
             target = self.lookup_route(self.module_name, path)
         except MelmanInvalidEndpoint:
             logger.error(f"{self.module_name}: Could not resolve '{path}'")
-            return self.print_help(melman_update)
+            return await self.print_help(melman_update)
 
         logger.info(f"{self.module_name}: Resolved '{path}'")
         await target(melman_update, context)
 
-    def print_help(self, update: MelmanUpdate) -> None:
+    async def print_help(self, update: MelmanUpdate) -> None:
         """
         Print the help menu to the user, if there is one.
         """
         if not self.help:
             return
 
-        self.help.send_help_message(update)
+        await self.help.send_help_message(update)
 
     def register_module(self, telegram_app: MelmanApp) -> None:
         logger.info(f"Registering '{self.module_name}' module")

@@ -8,11 +8,11 @@ from telegram.ext import ContextTypes
 from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
 
 echo = MelmanModule("echo", help_msg=MelmanMDHelp("""
-# `echo`
+**`echo`**
 Echos data back to the chat.
 
-## Usage
-```
+**Usage**
+```telegram
 echo <TEXT>
 ```
 """))
