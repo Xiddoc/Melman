@@ -11,4 +11,4 @@ async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> Non
     if not update.message:
         return
 
-    await update.message.reply_text(update.get_text())
+    await update.message.reply_text("Hey, I'm Melman, your favorite giraffe Telegram bot!")
