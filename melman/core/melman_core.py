@@ -14,7 +14,7 @@ class MelmanCore:
     def start(self) -> None:
         asyncio.run(self._main_flow())
 
-    async def _main_flow(self):
+    async def _main_flow(self) -> None:
         bot = telegram.Bot(self._api_key)
 
         async with bot:

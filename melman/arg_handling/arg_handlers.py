@@ -10,8 +10,9 @@ class MelmanArgumentHandler(metaclass=ABCMeta):
     The base class for argument handlers for the CLI parsing logic.
     """
 
+    @classmethod
     @abstractmethod
-    def handle(self, *args: str, **kwargs) -> None:
+    def handle(cls, *args: str, **kwargs: str) -> None:
         """
         The function which is called when executed.
         """
@@ -22,7 +23,8 @@ class StartMelman(MelmanArgumentHandler):
     Start the Melman bot synchronously.
     """
 
-    def handle(self, *args, **kwargs) -> None:
+    @classmethod
+    def handle(cls, *args: str, **kwargs: str) -> None:
         melman = MelmanCore(TokenLoader.get_token())
         melman.start()
 

@@ -3,6 +3,8 @@ The CLI argument parser.
 """
 import argparse
 
+from melman.arg_handling.arg_handler import MELMAN_COMMAND_ARG
+
 
 def get_parser() -> argparse.ArgumentParser:
     """
@@ -10,7 +12,7 @@ def get_parser() -> argparse.ArgumentParser:
     """
     parser = argparse.ArgumentParser()
 
-    subparser = parser.add_subparsers(required=True,
+    subparser = parser.add_subparsers(required=True, dest=MELMAN_COMMAND_ARG,
                                       help="The different actions that the Melman runner program can perform.")
     subparser.add_parser("start",
                          help="Start the Melman bot and run synchronously until termination or exception.")
