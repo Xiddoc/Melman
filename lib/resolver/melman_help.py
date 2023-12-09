@@ -1,6 +1,6 @@
 from enum import Enum
 
-from lib import MelmanUpdate
+from lib.resolver.melman_update import MelmanUpdate
 
 REPLY_FUNCTION_NAME_PREFIX = "reply_"
 
