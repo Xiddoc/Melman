@@ -12,7 +12,8 @@ from yt_dlp import YoutubeDL # type: ignore
 
 from lib import MelmanModule, MelmanUpdate, MelmanMDHelp, melman_logging
 
-OUT_PATH_PREFIX = 'OUT_'
+OUT_PATH_SUFFIX = '_OUT.mp4'
+BITRATE = '500k'
 
 download = MelmanModule("download", help_msg=MelmanMDHelp("""
 **`download`**
@@ -33,16 +34,16 @@ def get_download_file_prepath(temp_dir: str) -> Path:
     return path_to_file
 
 
-def get_output_file_path(temp_dir: str, prefix: str = "") -> str:
+def get_output_file_path(temp_dir: str, suffix: str = "") -> str:
     file, *_ = os.listdir(temp_dir)
 
-    path_to_file = str(Path(temp_dir) / (prefix + file))
+    path_to_file = str(Path(temp_dir) / (file + suffix))
 
     return path_to_file
 
 
 def get_download_file(temp_dir: str) -> bytes:
-    return open(get_output_file_path(temp_dir, prefix=OUT_PATH_PREFIX), "rb").read()
+    return open(get_output_file_path(temp_dir), "rb").read()
 
 
 def get_youtube_config(temp_dir: str) -> Dict[str, Any]:
@@ -60,9 +61,8 @@ async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> Non
 
         logger.info(f"Compressing video: '{url}'")
         os.system(f'ffmpeg -i "{get_output_file_path(temp_dir)}" '
-                  f'-vcodec libx265 '
-                  f'-crf 28 '
-                  f'"{get_output_file_path(temp_dir, prefix=OUT_PATH_PREFIX)}"')
+                  f'-b {BITRATE} '
+                  f'"{get_output_file_path(temp_dir, suffix=OUT_PATH_SUFFIX)}"')
 
         logger.info(f"Sending video: '{url}'")
         await update.message.reply_video(get_download_file(temp_dir))

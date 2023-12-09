@@ -10,7 +10,7 @@ def get_logger(logger_name: str) -> logging.Logger:
 
     # Create the logging output style
     fmt = logging.Formatter(
-        fmt="%(asctime)s %(levelname)s | %(message)s",
+        fmt="%(asctime)s %(name)s | %(levelname)s | %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%S"
     )
 
