@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 from typing import Dict, Any
 
 from telegram.ext import ContextTypes
-from yt_dlp import YoutubeDL # type: ignore
+from yt_dlp import YoutubeDL  # type: ignore
 
 from lib import MelmanModule, MelmanUpdate, MelmanMDHelp, melman_logging
 
@@ -42,10 +42,6 @@ def get_output_file_path(temp_dir: str, suffix: str = "") -> str:
     return path_to_file
 
 
-def get_download_file(temp_dir: str) -> bytes:
-    return open(get_output_file_path(temp_dir), "rb").read()
-
-
 def get_youtube_config(temp_dir: str) -> Dict[str, Any]:
     return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True}
 
@@ -60,9 +56,10 @@ async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> Non
         yt.download(url)
 
         logger.info(f"Compressing video: '{url}'")
-        os.system(f'ffmpeg -i "{get_output_file_path(temp_dir)}" '
-                  f'-b {BITRATE} '
-                  f'"{get_output_file_path(temp_dir, suffix=OUT_PATH_SUFFIX)}"')
+        input_file = get_output_file_path(temp_dir)
+        output_file = input_file + OUT_PATH_SUFFIX
+        os.system(f'ffmpeg -i "{input_file}" -b {BITRATE} "{output_file}"')
 
         logger.info(f"Sending video: '{url}'")
-        await update.message.reply_video(get_download_file(temp_dir))
+        file = open(output_file, "rb").read()
+        await update.message.reply_video(file)
