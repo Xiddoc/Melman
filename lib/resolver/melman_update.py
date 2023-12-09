@@ -6,6 +6,7 @@ EMPTY_STRING = ''
 
 
 class MelmanUpdate(Update):
+    __slots__ = tuple()
 
     def get_text(self) -> str:
         if not self.message:
