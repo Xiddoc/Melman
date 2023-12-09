@@ -1,0 +1,4 @@
+python-dotenv~=0.15.0
+argparse~=1.4.0
+yt-dlp
+python-telegram-bot

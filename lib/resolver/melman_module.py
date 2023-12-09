@@ -54,5 +54,6 @@ class MelmanModule(MelmanRouter):
 
     def register_module(self, telegram_app: MelmanApp) -> None:
         logger.info(f"Registering '{self.module_name}' module")
-        handler = MessageHandler(filters=filters.Regex('^' + self.module_name), callback=self._routing_callback)
+        handler = MessageHandler(filters=filters.Regex('^' + self.module_name),
+                                 callback=self._routing_callback)
         telegram_app.add_handler(handler)
