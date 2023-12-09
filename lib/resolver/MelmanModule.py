@@ -1,17 +1,14 @@
-from typing import Callable
+from typing import Callable, Optional, Any, Coroutine
 
 from http_router import Router
 from http_router.router import TPath, TVObj
 from telegram import Update
 from telegram.ext import Application, CallbackContext, MessageHandler
 from telegram.ext import filters
-# noinspection PyProtectedMember
-from telegram.ext._utils.types import HandlerCallback
 
 MelmanHandlerReturnType = None
 MelmanHandlerContext = CallbackContext
-MelmanCallback = HandlerCallback[Update, MelmanHandlerContext, MelmanHandlerReturnType]
-
+MelmanCallback = Callable[[Update, MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
 MelmanDecoratorWrapper = Callable[[MelmanCallback], TVObj]
 MelmanRoutes = TPath
 
@@ -37,6 +34,17 @@ class MelmanRouter(Router):
         return self.__call__(path).target
 
 
+class MelmanUpdate(Update):
+    def __init__(self, update: Update) -> None:
+        super().__init__(update.update_id)
+
+    def get_text(self) -> Optional[str]:
+        if not self.message:
+            return
+
+        return self.message.text or self.message.caption
+
+
 class MelmanModule(MelmanRouter):
     """
     The base module for Melman modules.
@@ -52,30 +60,25 @@ class MelmanModule(MelmanRouter):
         """
         Get the route we're supposed to navigate to.
         """
-        path = self._get_path_from_update(update)
+        melman_update = MelmanUpdate(update)
+
+        path = self._get_path_from_update(melman_update)
 
         target = self.lookup_route(path)
 
         await target(update, context)
 
-    def _get_path_from_update(self, update: Update) -> str:
+    def _get_path_from_update(self, update: MelmanUpdate) -> str:
         """
         Get the route we're supposed to call, given the message.
         """
-        original_path = self._get_text_from_update(update)
+        original_path = update.get_text()
 
         path_arguments = original_path.removeprefix(self.module_name).strip()
 
         first_argument, *_ = path_arguments.split(COMMAND_DELIMETER, 1)
 
         return first_argument
-
-    @staticmethod
-    def _get_text_from_update(update: Update) -> str:
-        """
-        Extract the text from the message sent.
-        """
-        return update.message.text or update.message.caption
 
     def register_module(self, telegram_app: Application) -> None:
         # logger.info(f"Registering '{self.module_name}' module")

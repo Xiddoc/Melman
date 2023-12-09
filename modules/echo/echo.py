@@ -12,4 +12,7 @@ echo = MelmanModule("echo")
 # noinspection PyUnusedFunction
 @echo.route()
 async def index(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not update.message:
+        return
+
     await update.message.reply_text("Hey, I'm Melman, your favorite giraffe Telegram bot!")
