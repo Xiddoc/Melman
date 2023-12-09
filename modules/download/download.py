@@ -5,10 +5,10 @@ import os
 import re
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Dict
+from typing import Dict, Any
 
 from telegram.ext import ContextTypes
-from yt_dlp import YoutubeDL
+from yt_dlp import YoutubeDL # type: ignore
 
 from lib import MelmanModule, MelmanUpdate, MelmanMDHelp, melman_logging
 
@@ -45,7 +45,7 @@ def get_download_file(temp_dir: str) -> bytes:
     return open(get_output_file_path(temp_dir, prefix=OUT_PATH_PREFIX), "rb").read()
 
 
-def get_youtube_config(temp_dir: str) -> Dict[str, str]:
+def get_youtube_config(temp_dir: str) -> Dict[str, Any]:
     return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True}
 
 
