@@ -1,48 +1,23 @@
-from typing import Callable, Optional, Any, Coroutine, cast
+from typing import Callable, Any, Coroutine
 
-from http_router import Router
 from http_router.router import TPath, TVObj
 from telegram import Update
 from telegram.ext import Application, CallbackContext, MessageHandler
 from telegram.ext import filters
+
+from lib.resolver.melman_router import MelmanRouter
+from lib.resolver.melman_update import MelmanUpdate
+
 COMMAND_DELIMETER = " "
 
 MelmanHandlerReturnType = None
 MelmanHandlerContext = CallbackContext
 MelmanRoutes = TPath
-MelmanCallback = Callable[["MelmanUpdate", MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
+MelmanCallback = Callable[[MelmanUpdate, MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
 MelmanDecoratorWrapper = Callable[[MelmanCallback], TVObj]
 
 
-
-class MelmanUpdate(Update):
-    def __init__(self, update: Update) -> None:
-        super().__init__(update.update_id)
-
-    def get_text(self) -> Optional[str]:
-        if not self.message:
-            return None
-
-        return self.message.text or self.message.caption
-
 # logger = melman_logger.get_logger("MelmanModule")
-
-class MelmanRouter(Router):
-    """
-    A slightly improved router.
-    Wraps the routing functionality.
-    """
-
-    def route(self, *paths: MelmanRoutes, **opts) -> MelmanDecoratorWrapper:
-        if not paths:
-            # Empty route
-            paths = ('',)
-
-        return super().route(*paths, **opts)
-
-    def lookup_route(self, path: str) -> MelmanCallback:
-        return cast(MelmanCallback, self.__call__(path).target)
-
 
 
 class MelmanModule(MelmanRouter):
