@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABCMeta
 from typing import Type, Dict
 
-from lib.core.melman_core import MelmanCore
+from lib.resolver.melman_core import MelmanCore
 from lib.keys.token_loader import TokenLoader
 
 
