@@ -1,43 +1,28 @@
-from enum import Enum
+from typing import Optional
+
+from telegram.constants import ParseMode
 
 from lib.resolver.melman_update import MelmanUpdate
-
-REPLY_FUNCTION_NAME_PREFIX = "reply_"
-
-
-class MelmanHelpTextType(Enum):
-    MD = 'markdown_v2'
-    TEXT = 'text'
 
 
 class MelmanHelp:
 
-    def __init__(self, help_txt: str, text_type: MelmanHelpTextType) -> None:
+    def __init__(self, help_txt: str, format_type: Optional[ParseMode]) -> None:
         self.help_txt = help_txt
-        self.text_type = text_type
+        self.text_type = format_type
 
     async def send_help_message(self, update: MelmanUpdate) -> None:
         """
         Send the help message to the user.
         """
-        reply_function = getattr(update.message, self._get_reply_function_name())
-
-        await reply_function(self.help_txt)
-
-    def _get_reply_function_name(self) -> str:
-        """
-        Get the name of the reply function to use, given the help message type.
-
-        For example, MD help messages should return `reply_markdown_v2`.
-        """
-        return REPLY_FUNCTION_NAME_PREFIX + str(self.text_type.value)
+        await update.message.reply_text(self.help_txt, parse_mode=self.text_type)
 
 
 class MelmanMDHelp(MelmanHelp):
     BLACKLIST = ['#', '.', '>', '<', '-', '!']
 
     def __init__(self, help_txt: str):
-        super().__init__(self._escape_md(help_txt), MelmanHelpTextType.MD)
+        super().__init__(self._escape_md(help_txt), format_type=ParseMode.MARKDOWN_V2)
 
     @classmethod
     def _escape_md(cls, message: str) -> str:
@@ -49,4 +34,4 @@ class MelmanMDHelp(MelmanHelp):
 
 class MelmanTextHelp(MelmanHelp):
     def __init__(self, help_txt: str):
-        super().__init__(help_txt, MelmanHelpTextType.TEXT)
+        super().__init__(help_txt, format_type=None)
