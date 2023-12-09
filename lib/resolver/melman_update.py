@@ -1,10 +1,11 @@
-from telegram import Update
+from telegram import Update, Message
 
 EMPTY_STRING = ''
 
 
 class MelmanUpdate(Update):
     _module_name: str
+    message: Message
 
     def __init__(self, module_name: str, update: Update) -> None:
         """

@@ -1,14 +1,34 @@
 from telegram.ext import ContextTypes
 
-from lib import MelmanModule, MelmanUpdate, MelmanTextHelp
+from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
 
-hello_world = MelmanModule("helloworld", help_msg=MelmanTextHelp("Prints a basic hello world message to the screen!"))
+BASE_HELP_TEXT = """
+*Melman - Your bot for quick and simple tasks*
+
+To see all commands, type:
+```telegram
+help
+```
+
+To see information about a specific command, type:
+```telegram
+help <COMMAND_NAME>
+```
+
+"""
+
+help_cmd = MelmanModule("help", MelmanMDHelp(BASE_HELP_TEXT))
 
 
 # noinspection PyUnusedFunction
-@hello_world.route()
+@help_cmd.route()
 async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not update.message:
-        return
+    from modules import MELMAN_MODULES
 
-    await update.message.reply_text("Hey, I'm Melman, your favorite giraffe Telegram bot!")
+    help_text = BASE_HELP_TEXT + "Available commands:\n"
+
+    for module in MELMAN_MODULES:
+        help_text += f"• `{module.module_name}`\n"
+
+    await MelmanMDHelp(help_text).send_help_message(update)
+
