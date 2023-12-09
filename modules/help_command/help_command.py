@@ -44,7 +44,8 @@ async def get_specific_command_help(update: MelmanUpdate, context: ContextTypes.
     module = get_module_by_name(update.get_path(), MELMAN_MODULES)
 
     if not module:
-        await update.message.reply_text("No command inputted.")
+        await update.message.reply_markdown_v2(rf"Unrecognized command `{update.get_path()}`\. "
+                                               r"Try running `help` to see available commands\.")
         return
 
     await module.send_help_message_to_user(update)
