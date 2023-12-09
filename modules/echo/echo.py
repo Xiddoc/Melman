@@ -5,9 +5,17 @@ import re
 
 from telegram.ext import ContextTypes
 
-from lib import MelmanModule, MelmanUpdate
+from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
 
-echo = MelmanModule("echo")
+echo = MelmanModule("echo", help_msg=MelmanMDHelp("""
+# `echo`
+Echos data back to the chat.
+
+## Usage
+```
+echo <TEXT>
+```
+"""))
 
 
 # noinspection PyUnusedFunction

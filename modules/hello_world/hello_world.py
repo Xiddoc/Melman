@@ -1,7 +1,6 @@
 from telegram.ext import ContextTypes
 
-from lib import MelmanModule, MelmanUpdate
-from lib.resolver.melman_help import MelmanTextHelp
+from lib import MelmanModule, MelmanUpdate, MelmanTextHelp
 
 hello_world = MelmanModule("helloworld", help_msg=MelmanTextHelp("Prints a basic hello world message to the screen!"))
 

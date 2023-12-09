@@ -6,7 +6,7 @@ EMPTY_STRING = ''
 class MelmanUpdate(Update):
     _module_name: str
 
-    def __init__(self, module_name, update: Update):
+    def __init__(self, module_name: str, update: Update) -> None:
         """
         Get a MelmanUpdate object from a Telegram update object.
         """
