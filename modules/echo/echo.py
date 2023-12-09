@@ -11,7 +11,7 @@ echo = MelmanModule("echo")
 
 
 # noinspection PyUnusedFunction
-@echo.route(re.compile(r".*"))
+@echo.route(re.compile(r".+"))
 async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not update.message:
         return
