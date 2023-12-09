@@ -4,12 +4,14 @@ from telegram import Update
 from telegram.ext import MessageHandler, ContextTypes
 from telegram.ext import filters
 
+from lib import melman_logging
 from lib.melman_errors import MelmanInvalidEndpoint
-from lib.melman_logging import logger
 from lib.resolver.melman_help import MelmanHelp
 from lib.resolver.melman_router import MelmanRouter
 from lib.resolver.melman_types import MelmanApp
 from lib.resolver.melman_update import MelmanUpdate
+
+logger = melman_logging.get_logger("MelmanModule")
 
 
 class MelmanModule(MelmanRouter):

@@ -10,7 +10,9 @@ from typing import Dict
 from telegram.ext import ContextTypes
 from yt_dlp import YoutubeDL
 
-from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
+from lib import MelmanModule, MelmanUpdate, MelmanMDHelp, melman_logging
+
+OUT_PATH_PREFIX = 'OUT_'
 
 download = MelmanModule("download", help_msg=MelmanMDHelp("""
 **`download`**
@@ -22,6 +24,8 @@ download <LINK_TO_POST>
 ```
 """))
 
+logger = melman_logging.get_logger("Downloader")
+
 
 def get_download_file_prepath(temp_dir: str) -> Path:
     path_to_file = Path(temp_dir) / "vid"
@@ -29,16 +33,20 @@ def get_download_file_prepath(temp_dir: str) -> Path:
     return path_to_file
 
 
-def get_download_file(temp_dir: str) -> bytes:
+def get_output_file_path(temp_dir: str, prefix: str = "") -> str:
     file, *_ = os.listdir(temp_dir)
 
-    path_to_file = str(Path(temp_dir) / file)
+    path_to_file = str(Path(temp_dir) / (prefix + file))
 
-    return open(path_to_file, "rb").read()
+    return path_to_file
+
+
+def get_download_file(temp_dir: str) -> bytes:
+    return open(get_output_file_path(temp_dir, prefix=OUT_PATH_PREFIX), "rb").read()
 
 
 def get_youtube_config(temp_dir: str) -> Dict[str, str]:
-    return {'outtmpl': str(get_download_file_prepath(temp_dir))}
+    return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True}
 
 
 # noinspection PyUnusedFunction
@@ -47,6 +55,14 @@ async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> Non
     url = update.get_path()
 
     with TemporaryDirectory() as temp_dir, YoutubeDL(get_youtube_config(temp_dir)) as yt:
+        logger.info(f"Downloading video: '{url}'")
         yt.download(url)
 
+        logger.info(f"Compressing video: '{url}'")
+        os.system(f'ffmpeg -i "{get_output_file_path(temp_dir)}" '
+                  f'-vcodec libx265 '
+                  f'-crf 28 '
+                  f'"{get_output_file_path(temp_dir, prefix=OUT_PATH_PREFIX)}"')
+
+        logger.info(f"Sending video: '{url}'")
         await update.message.reply_video(get_download_file(temp_dir))
