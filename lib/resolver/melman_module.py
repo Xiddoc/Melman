@@ -1,9 +1,12 @@
+from typing import Optional
+
 from telegram import Update
 from telegram.ext import MessageHandler, ContextTypes
 from telegram.ext import filters
 
 from lib.melman_errors import MelmanInvalidEndpoint
 from lib.melman_logging import logger
+from lib.resolver.melman_help import MelmanHelp
 from lib.resolver.melman_router import MelmanRouter
 from lib.resolver.melman_types import MelmanApp
 from lib.resolver.melman_update import MelmanUpdate
@@ -16,8 +19,9 @@ class MelmanModule(MelmanRouter):
     Allows you to create a simple and straightforward route-based command-response program.
     """
 
-    def __init__(self, module_name: str) -> None:
+    def __init__(self, module_name: str, help_msg: Optional[MelmanHelp] = None) -> None:
         super().__init__()
+        self.help = help_msg
         self.module_name = module_name
 
     async def _routing_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -31,13 +35,20 @@ class MelmanModule(MelmanRouter):
         try:
             target = self.lookup_route(self.module_name, path)
         except MelmanInvalidEndpoint:
-            # Endpoint was not found
-            # Essentially a 404 page
             logger.error(f"{self.module_name}: Could not resolve '{path}'")
-            return
+            return self.print_help(melman_update)
 
         logger.info(f"{self.module_name}: Resolved '{path}'")
         await target(melman_update, context)
+
+    def print_help(self, update: MelmanUpdate) -> None:
+        """
+        Print the help menu to the user, if there is one.
+        """
+        if not self.help:
+            return
+
+        self.help.send_help_message(update)
 
     def register_module(self, telegram_app: MelmanApp) -> None:
         logger.info(f"Registering '{self.module_name}' module")
