@@ -24,7 +24,7 @@ class MelmanModule(MelmanRouter):
         """
         Get the route we're supposed to navigate to.
         """
-        melman_update = MelmanUpdate.from_update(self.module_name, update)
+        melman_update = MelmanUpdate(self.module_name, update)
 
         path = melman_update.get_path()
 
