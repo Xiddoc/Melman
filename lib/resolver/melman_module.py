@@ -24,9 +24,9 @@ class MelmanModule(MelmanRouter):
         """
         Get the route we're supposed to navigate to.
         """
-        melman_update = MelmanUpdate.from_update(update)
+        melman_update = MelmanUpdate.from_update(self.module_name, update)
 
-        path = self._get_path_from_update(melman_update)
+        path = melman_update.get_path()
 
         try:
             target = self.lookup_route(self.module_name, path)
@@ -36,22 +36,8 @@ class MelmanModule(MelmanRouter):
             logger.error(f"{self.module_name}: Could not resolve '{path}'")
             return
 
-        logger.info(f"{self.module_name}: Resolved '{self.path}'")
+        logger.info(f"{self.module_name}: Resolved '{path}'")
         await target(melman_update, context)
-
-    def _get_path_from_update(self, update: MelmanUpdate) -> str:
-        """
-        Get the route we're supposed to call, given the message.
-        For example, given 'echo 1 2 3' we should return '1 2 3'.
-        """
-        original_path = update.get_text()
-
-        if not original_path:
-            return ''
-
-        path_arguments = original_path.removeprefix(self.module_name).strip()
-
-        return path_arguments
 
     def register_module(self, telegram_app: MelmanApp) -> None:
         logger.info(f"Registering '{self.module_name}' module")
