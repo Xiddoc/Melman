@@ -3,8 +3,7 @@ An echo command! Echo, echo, echo...
 """
 from telegram.ext import ContextTypes
 
-from lib import MelmanModule
-from lib.resolver.MelmanModule import MelmanUpdate
+from lib import MelmanModule, MelmanUpdate
 
 echo = MelmanModule("echo")
 

@@ -1,6 +1,5 @@
-from typing import Callable, Any, Coroutine
+from typing import Callable, Any, Coroutine, Union, Pattern
 
-from http_router.router import TPath, TVObj
 from telegram import Update
 from telegram.ext import Application, CallbackContext, MessageHandler
 from telegram.ext import filters
@@ -12,9 +11,9 @@ COMMAND_DELIMETER = " "
 
 MelmanHandlerReturnType = None
 MelmanHandlerContext = CallbackContext
-MelmanRoutes = TPath
+MelmanRoutes = Union[str, Pattern]
 MelmanCallback = Callable[[MelmanUpdate, MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
-MelmanDecoratorWrapper = Callable[[MelmanCallback], TVObj]
+MelmanDecoratorWrapper = Callable[[MelmanCallback], Any]
 
 
 # logger = melman_logger.get_logger("MelmanModule")
@@ -41,7 +40,7 @@ class MelmanModule(MelmanRouter):
 
         target = self.lookup_route(path)
 
-        await target(update, context)
+        await target(melman_update, context)
 
     def _get_path_from_update(self, update: MelmanUpdate) -> str:
         """
