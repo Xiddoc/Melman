@@ -1,19 +1,29 @@
-from typing import Callable, Optional, Any, Coroutine
+from typing import Callable, Optional, Any, Coroutine, cast
 
 from http_router import Router
 from http_router.router import TPath, TVObj
 from telegram import Update
 from telegram.ext import Application, CallbackContext, MessageHandler
 from telegram.ext import filters
+COMMAND_DELIMETER = " "
 
 MelmanHandlerReturnType = None
 MelmanHandlerContext = CallbackContext
-MelmanCallback = Callable[[Update, MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
-MelmanDecoratorWrapper = Callable[[MelmanCallback], TVObj]
 MelmanRoutes = TPath
+MelmanCallback = Callable[["MelmanUpdate", MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
+MelmanDecoratorWrapper = Callable[[MelmanCallback], TVObj]
 
-COMMAND_DELIMETER = " "
 
+
+class MelmanUpdate(Update):
+    def __init__(self, update: Update) -> None:
+        super().__init__(update.update_id)
+
+    def get_text(self) -> Optional[str]:
+        if not self.message:
+            return None
+
+        return self.message.text or self.message.caption
 
 # logger = melman_logger.get_logger("MelmanModule")
 
@@ -31,18 +41,8 @@ class MelmanRouter(Router):
         return super().route(*paths, **opts)
 
     def lookup_route(self, path: str) -> MelmanCallback:
-        return self.__call__(path).target
+        return cast(MelmanCallback, self.__call__(path).target)
 
-
-class MelmanUpdate(Update):
-    def __init__(self, update: Update) -> None:
-        super().__init__(update.update_id)
-
-    def get_text(self) -> Optional[str]:
-        if not self.message:
-            return
-
-        return self.message.text or self.message.caption
 
 
 class MelmanModule(MelmanRouter):
@@ -73,6 +73,9 @@ class MelmanModule(MelmanRouter):
         Get the route we're supposed to call, given the message.
         """
         original_path = update.get_text()
+
+        if not original_path:
+            return ''
 
         path_arguments = original_path.removeprefix(self.module_name).strip()
 
