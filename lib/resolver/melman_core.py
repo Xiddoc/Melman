@@ -2,9 +2,10 @@
 The root handler for the Bot, which passes the rest of the logic onto other components.
 """
 
-from telegram.ext import ApplicationBuilder, Application
+from telegram.ext import ApplicationBuilder
 
 from lib.melman_banner import MELMAN_BANNER
+from lib.resolver.melman_types import MelmanApp
 from modules import MELMAN_MODULES
 
 
@@ -23,6 +24,6 @@ class MelmanCore:
         application.run_polling()
 
     @staticmethod
-    def _register_modules(app: Application) -> None:
+    def _register_modules(app: MelmanApp) -> None:
         for module in MELMAN_MODULES:
             module.register_module(app)

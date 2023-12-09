@@ -1,19 +1,12 @@
-from typing import Callable, Any, Coroutine, Union, Pattern
-
 from telegram import Update
-from telegram.ext import Application, CallbackContext, MessageHandler
+from telegram.ext import MessageHandler, ContextTypes
 from telegram.ext import filters
 
 from lib.resolver.melman_router import MelmanRouter
+from lib.resolver.melman_types import MelmanApp
 from lib.resolver.melman_update import MelmanUpdate
 
 COMMAND_DELIMETER = " "
-
-MelmanHandlerReturnType = None
-MelmanHandlerContext = CallbackContext
-MelmanRoutes = Union[str, Pattern]
-MelmanCallback = Callable[[MelmanUpdate, MelmanHandlerContext], Coroutine[Any, Any, MelmanHandlerReturnType]]
-MelmanDecoratorWrapper = Callable[[MelmanCallback], Any]
 
 
 # logger = melman_logger.get_logger("MelmanModule")
@@ -30,7 +23,7 @@ class MelmanModule(MelmanRouter):
         super().__init__()
         self.module_name = module_name
 
-    async def _routing_callback(self, update: Update, context: CallbackContext) -> None:
+    async def _routing_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Get the route we're supposed to navigate to.
         """
@@ -57,7 +50,7 @@ class MelmanModule(MelmanRouter):
 
         return first_argument
 
-    def register_module(self, telegram_app: Application) -> None:
+    def register_module(self, telegram_app: MelmanApp) -> None:
         # logger.info(f"Registering '{self.module_name}' module")
         handler = MessageHandler(filters=filters.Regex('^' + self.module_name), callback=self._routing_callback)
         telegram_app.add_handler(handler)

@@ -1,8 +1,8 @@
-from typing import cast
+from typing import cast, Any
 
 from http_router import Router
 
-from lib.resolver.melman_module import MelmanRoutes, MelmanDecoratorWrapper, MelmanCallback
+from lib.resolver.melman_types import MelmanRoutes, MelmanCallback, MelmanDecoratorWrapper
 
 
 class MelmanRouter(Router):
@@ -11,7 +11,7 @@ class MelmanRouter(Router):
     Wraps the routing functionality.
     """
 
-    def route(self, *paths: MelmanRoutes, **opts) -> MelmanDecoratorWrapper:
+    def route(self, *paths: MelmanRoutes, **opts: Any) -> MelmanDecoratorWrapper:
         if not paths:
             # Empty route
             paths = ('',)
