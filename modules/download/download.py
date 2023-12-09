@@ -3,6 +3,7 @@ Download a video or post from somewhere.
 """
 import os
 import re
+import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict, Any
@@ -46,6 +47,14 @@ def get_youtube_config(temp_dir: str) -> Dict[str, Any]:
     return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True}
 
 
+def compress_video(input_file, output_file):
+    process = subprocess.Popen(['ffmpeg', '-i', input_file, '-b', BITRATE, output_file],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    process.communicate()
+    process.wait()
+
+
 # noinspection PyUnusedFunction
 @download.route(re.compile(r".+"))
 async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -58,7 +67,7 @@ async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> Non
         logger.info(f"Compressing video: '{url}'")
         input_file = get_output_file_path(temp_dir)
         output_file = input_file + OUT_PATH_SUFFIX
-        os.system(f'ffmpeg -i "{input_file}" -b {BITRATE} "{output_file}"')
+        compress_video(input_file, output_file)
 
         logger.info(f"Sending video: '{url}'")
         file = open(output_file, "rb").read()
