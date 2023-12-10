@@ -46,7 +46,7 @@ def get_output_file_path(temp_dir: str, suffix: str = "") -> str:
 
 
 def get_youtube_config(temp_dir: str) -> Dict[str, Any]:
-    return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True}
+    return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True, "no_warnings": True}
 
 
 def compress_video(input_file: str, output_file: str) -> None:
@@ -57,7 +57,19 @@ def compress_video(input_file: str, output_file: str) -> None:
     process.wait(COMPRESS_TIMEOUT)
 
 
-async def _unsafe_download_video(url: str) -> bytes:
+def convert_video_to_mp3(input_file: str) -> str:
+    output_file = input_file + '.mp3'
+
+    process = subprocess.Popen(['ffmpeg', '-i', input_file, output_file],
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    process.communicate()
+    process.wait(COMPRESS_TIMEOUT)
+
+    return output_file
+
+
+async def _unsafe_download_media(url: str, convert_to_mp3: bool = False) -> bytes:
     """
     :raises DownloadError: If YT-DLP fails to download the video.
     :raises TimeoutExpired: If FFMPEG took too long to compress the video.
@@ -68,11 +80,15 @@ async def _unsafe_download_video(url: str) -> bytes:
         yt.download(url)
 
         logger.info(f"Compressing video: '{url}'")
-        input_file = get_output_file_path(temp_dir)
-        output_file = input_file + OUT_PATH_SUFFIX
-        compress_video(input_file, output_file)
+        input_video = get_output_file_path(temp_dir)
+        output_video = input_video + OUT_PATH_SUFFIX
+        compress_video(input_video, output_video)
 
-        return open(output_file, "rb").read()
+        if convert_to_mp3:
+            logger.info(f"Converting to MP3: '{url}'")
+            output_video = convert_video_to_mp3(output_video)
+
+        return open(output_video, "rb").read()
 
 
 # noinspection PyUnusedFunction
@@ -81,7 +97,7 @@ async def download_video(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYP
     url = update.get_path()
 
     try:
-        file = await _unsafe_download_video(url)
+        file = await _unsafe_download_media(url)
 
         logger.info(f"Sending video: '{url}'")
         await update.message.reply_video(file)
@@ -98,4 +114,18 @@ async def download_video(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYP
 # noinspection PyUnusedFunction
 @download.route(re.compile(r"mp3 .+"))
 async def download_music(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pass
+    url = update.get_path().removeprefix('mp3 ')
+
+    try:
+        file = await _unsafe_download_media(url, convert_to_mp3=True)
+
+        logger.info(f"Sending audio: '{url}'")
+        await update.message.reply_audio(file)
+    except DownloadError as exc:
+        logger.error(f"Couldn't download video '{url}': {exc}")
+        await update.message.reply_text("Error encountered while downloading the video, "
+                                        "failed with error: " + str(exc))
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        logger.error(f"Timeout expired or error while processing '{url}': {exc}")
+        await update.message.reply_text("Error encountered while processing the video. "
+                                        "Try again with a shorter clip?")
