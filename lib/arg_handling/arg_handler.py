@@ -5,9 +5,13 @@ The start of the different flows is parsed here then sent off to different logic
 import argparse
 from typing import Type, Dict
 
+from lib import melman_logging
 from lib.arg_handling.arg_handlers import ARG_HANDLERS, MelmanArgumentHandler
+from lib.melman_banner import MELMAN_BANNER
+from lib.melman_errors import MelmanError
 
 MELMAN_COMMAND_ARG = 'command'
+logger = melman_logging.get_logger("Melman")
 
 
 def _unsafe_get_handler(inputted_command: str) -> Type[MelmanArgumentHandler]:
@@ -31,4 +35,9 @@ def handle_parsed_args(cli_args: argparse.Namespace) -> None:
     handler = get_handler(command)
     arguments = get_arguments_as_dict(cli_args)
 
-    handler.handle(**arguments)
+    try:
+        print(MELMAN_BANNER)
+        handler.handle(**arguments)
+    except MelmanError as exc:
+        logger.error("Unexpected error occurred:")
+        logger.error(exc)

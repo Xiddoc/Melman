@@ -4,7 +4,6 @@ The root handler for the Bot, which passes the rest of the logic onto other comp
 
 from telegram.ext import ApplicationBuilder, Defaults
 
-from lib.melman_banner import MELMAN_BANNER
 from lib.resolver.melman_types import MelmanApp
 from modules import MELMAN_MODULES
 
@@ -15,7 +14,6 @@ class MelmanCore:
         self._api_key = api_token
 
     def start(self) -> None:
-        print(MELMAN_BANNER)
         self._start_telegram_application()
 
     def _start_telegram_application(self) -> None:

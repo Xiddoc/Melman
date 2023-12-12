@@ -1,5 +1,8 @@
-python-dotenv~=0.15.0
-argparse~=1.4.0
+python-dotenv==0.15.0
+argparse==1.4.0
 yt-dlp
 http-router
 python-telegram-bot
+gitpython
+dataclasses==0.6
+requests==2.24.0

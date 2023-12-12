@@ -16,6 +16,12 @@ class MelmanStartupError(MelmanError):
     """
 
 
+class MelmanUpdateError(MelmanError):
+    """
+    Melman could not update himself.
+    """
+
+
 class MelmanModuleError(MelmanError):
     """
     An error that Melman encountered in the processing of a module.

@@ -16,6 +16,8 @@ def get_parser() -> argparse.ArgumentParser:
                                       help="The different actions that the Melman runner program can perform.")
     subparser.add_parser("start",
                          help="Start the Melman bot and run synchronously until termination or exception.")
+    subparser.add_parser("update",
+                         help="Update the Melman bot on demand. Melman will also auto-update himself periodically.")
 
     return parser
 
