@@ -1,3 +1,4 @@
+<!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
 <img width=100 height=100 src=https://cdn-icons-png.flaticon.com/512/848/848698.png  alt="Melman">
 </p>

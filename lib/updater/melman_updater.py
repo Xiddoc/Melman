@@ -4,6 +4,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from tempfile import TemporaryDirectory
+from typing import cast
 
 import requests
 from git import Repo, InvalidGitRepositoryError
@@ -113,4 +114,4 @@ class MelmanUpdater:
         :raises InvalidGitRepositoryError: If a Git repo could not be identified.
         """
         repo = Repo(search_parent_directories=True)
-        return repo.head.object.hexsha
+        return cast(str, repo.head.object.hexsha)
