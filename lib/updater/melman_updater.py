@@ -29,6 +29,8 @@ DEFAULT_HEADERS = {
                   "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 REQUIREMENTS_FILE = "requirements.txt"
+PIP_SUCCESS_CODE = 0
+PIP_TIMEOUT = 120
 
 
 @dataclass
@@ -50,31 +52,35 @@ class MelmanUpdater:
         self._download_to_project()
 
         logger.info("Installing dependencies...")
-        try:
-            self._install_requirements()
-        except MelmanUpdateError:
+        if not self._install_requirements():
             logger.error("Could not install dependencies to update Melman.")
             return False
 
+        logger.info("Successfully updated Melman!")
+        logger.info("Now running version: " + self._get_last_local_commit_hash())
         return True
 
     @staticmethod
-    def _install_requirements() -> None:
+    def _install_requirements() -> bool:
         """
         Install the necessary dependencies for the project via pip.
 
+        :returns: `True` if we managed to install the Python dependencies.
         :raises MelmanUpdateError: If we can't update the dependencies.
         """
         try:
-            subprocess.check_call(args=[sys.executable, "-m", "pip", "install", "-r", REQUIREMENTS_FILE],
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
-        except subprocess.CalledProcessError as exc:
-            raise MelmanUpdateError("Can't install dependencies due to pip error.") from exc
+            process = subprocess.Popen(args=[sys.executable, "-m", "pip", "install", "-r", REQUIREMENTS_FILE],
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+            process.communicate(timeout=PIP_TIMEOUT)
+            return process.wait(PIP_TIMEOUT) == PIP_SUCCESS_CODE
+        except subprocess.CalledProcessError:
+            return False
 
     def _download_to_project(self) -> None:
         with TemporaryDirectory() as tmp:
             self._download_to(self.git_repo, tmp)
+            shutil.rmtree(ROOT_DIR, ignore_errors=True)
             shutil.copytree(tmp, ROOT_DIR, dirs_exist_ok=True)
 
     def _check_for_updates(self) -> bool:
