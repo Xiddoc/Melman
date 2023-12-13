@@ -4,8 +4,8 @@ from telegram import Update
 from telegram.ext import MessageHandler, ContextTypes
 from telegram.ext import filters
 
-from lib import melman_logging
-from lib.melman_errors import MelmanInvalidEndpoint
+from lib.commons import melman_logging
+from lib.commons.melman_errors import MelmanInvalidEndpoint
 from lib.resolver.melman_help import MelmanHelp
 from lib.resolver.melman_router import MelmanRouter
 from lib.resolver.melman_types import MelmanApp

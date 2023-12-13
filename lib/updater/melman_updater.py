@@ -7,7 +7,7 @@ from typing import cast
 
 from git import Repo, InvalidGitRepositoryError
 
-from lib import melman_logging
+from lib.commons import melman_logging
 from melman import ROOT_DIR
 
 logger = melman_logging.get_logger("MelmanUpdater")

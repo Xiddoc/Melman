@@ -4,8 +4,8 @@ import time
 from threading import Thread
 from typing import Callable
 
-from lib import melman_logging
-from lib.melman_config import CHECK_FOR_UPDATES_INTERVAL
+from lib.commons import melman_logging
+from lib.commons.melman_config import CHECK_FOR_UPDATES_INTERVAL
 from lib.updater.melman_updater import MelmanUpdater
 
 logger = melman_logging.get_logger("MelmanAutoUpdater")

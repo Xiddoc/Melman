@@ -2,7 +2,7 @@ from abc import abstractmethod, ABCMeta
 from typing import Type, Dict
 
 from lib.keys.token_loader import TokenLoader
-from lib.melman_config import REMOTE_GIT_LINK
+from lib.commons.melman_config import REMOTE_GIT_LINK
 from lib.resolver.melman_core import MelmanCore
 from lib.updater.melman_updater import MelmanUpdater
 

@@ -5,10 +5,10 @@ The start of the different flows is parsed here then sent off to different logic
 import argparse
 from typing import Type, Dict
 
-from lib import melman_logging
+from lib.commons import melman_logging
 from lib.arg_handling.arg_handlers import ARG_HANDLERS, MelmanArgumentHandler
-from lib.melman_banner import MELMAN_BANNER
-from lib.melman_errors import MelmanError
+from lib.commons.melman_banner import MELMAN_BANNER
+from lib.commons.melman_errors import MelmanError
 
 MELMAN_COMMAND_ARG = 'command'
 logger = melman_logging.get_logger("Melman")

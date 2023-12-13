@@ -2,7 +2,7 @@ from typing import cast, Any
 
 from http_router import Router, NotFoundError
 
-from lib.melman_errors import MelmanInvalidEndpoint
+from lib.commons.melman_errors import MelmanInvalidEndpoint
 from lib.resolver.melman_types import MelmanRoutes, MelmanCallback, MelmanDecoratorWrapper
 
 

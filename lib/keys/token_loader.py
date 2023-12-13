@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from lib import melman_config, melman_errors
+from lib.commons import melman_errors, melman_config
 
 
 class TokenLoader:

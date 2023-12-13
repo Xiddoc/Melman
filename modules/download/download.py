@@ -12,7 +12,8 @@ from telegram.ext import ContextTypes
 from yt_dlp import YoutubeDL  # type: ignore
 from yt_dlp.utils import DownloadError  # type: ignore
 
-from lib import MelmanModule, MelmanUpdate, MelmanMDHelp, melman_logging
+from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
+from lib.commons import melman_logging
 
 OUT_PATH_SUFFIX = '_OUT.mp4'
 BITRATE = '500k'
