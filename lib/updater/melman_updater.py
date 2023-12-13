@@ -28,7 +28,9 @@ class MelmanUpdater:
         :returns: `True` if Melman was updated.
         """
         logger.info("Checking if we should update")
-        self._update_if_available()
+        if not self._update_if_available():
+            logger.info("Running latest version!")
+            return False
 
         logger.info("Installing dependencies")
         if not self._install_requirements():
@@ -55,7 +57,10 @@ class MelmanUpdater:
         except subprocess.CalledProcessError:
             return False
 
-    def _update_if_available(self) -> None:
+    def _update_if_available(self) -> bool:
+        """
+        Returns `True` if an update was installed.
+        """
         with TemporaryDirectory() as tmp:
             logger.info("Downloading remote repo")
             self._download_to(self.git_repo, tmp)
@@ -66,6 +71,10 @@ class MelmanUpdater:
                 # Delete our files to overwrite them
                 shutil.rmtree(ROOT_DIR, ignore_errors=True)
                 shutil.copytree(tmp, ROOT_DIR, dirs_exist_ok=True)
+                return True
+
+            return False
+
 
     def _check_for_updates(self, newer_repo_version: str) -> bool:
         """
