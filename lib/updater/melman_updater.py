@@ -64,6 +64,7 @@ class MelmanUpdater:
         with TemporaryDirectory() as tmp:
             logger.info("Downloading remote repo")
             self._download_to(self.git_repo, tmp)
+            self._move_env_to(tmp)
             remote_version = self._get_last_commit_hash(tmp)
 
             if self._check_for_updates(remote_version):
@@ -74,7 +75,6 @@ class MelmanUpdater:
                 return True
 
             return False
-
 
     def _check_for_updates(self, newer_repo_version: str) -> bool:
         """
@@ -102,3 +102,7 @@ class MelmanUpdater:
         """
         repo = Repo(path=repo_path, search_parent_directories=True)
         return cast(str, repo.head.object.hexsha)
+
+    @staticmethod
+    def _move_env_to(tmp):
+        shutil.move(".env", tmp)
