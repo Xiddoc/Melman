@@ -1,4 +1,3 @@
-import re
 import shutil
 import subprocess
 import sys
@@ -6,28 +5,13 @@ from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from typing import cast
 
-import requests
 from git import Repo, InvalidGitRepositoryError
 
 from lib import melman_logging
-from lib.melman_errors import MelmanUpdateError
 from melman import ROOT_DIR
 
 logger = melman_logging.get_logger("MelmanUpdater")
 
-GIT_SUFFIX = '.git'
-LAST_HASH_REGEX = re.compile(r'"/.*?/.*?/commit/([\w\d]*?)"')
-DEFAULT_HEADERS = {
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
-              "image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Cache-Control": "no-cache",
-    "Pragma": "no-cache",
-    "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-}
 REQUIREMENTS_FILE = "requirements.txt"
 PIP_SUCCESS_CODE = 0
 PIP_TIMEOUT = 120
@@ -44,12 +28,7 @@ class MelmanUpdater:
         :returns: `True` if Melman was updated.
         """
         logger.info("Checking if we should update")
-        if not self._check_for_updates():
-            logger.info("Running the latest version!")
-            return False
-
-        logger.info("Updating Melman")
-        self._download_to_project()
+        self._update_if_available()
 
         logger.info("Installing dependencies")
         if not self._install_requirements():
@@ -57,7 +36,6 @@ class MelmanUpdater:
             return False
 
         logger.info("Successfully updated Melman!")
-        logger.info("Now running version: " + self._get_last_local_commit_hash())
         return True
 
     @staticmethod
@@ -77,18 +55,24 @@ class MelmanUpdater:
         except subprocess.CalledProcessError:
             return False
 
-    def _download_to_project(self) -> None:
+    def _update_if_available(self) -> None:
         with TemporaryDirectory() as tmp:
+            logger.info("Downloading remote repo")
             self._download_to(self.git_repo, tmp)
-            shutil.rmtree(ROOT_DIR, ignore_errors=True)
-            shutil.copytree(tmp, ROOT_DIR, dirs_exist_ok=True)
+            remote_version = self._get_last_commit_hash(tmp)
 
-    def _check_for_updates(self) -> bool:
+            if self._check_for_updates(remote_version):
+                logger.info(f"Newer version found, updating to: {remote_version}")
+                # Delete our files to overwrite them
+                shutil.rmtree(ROOT_DIR, ignore_errors=True)
+                shutil.copytree(tmp, ROOT_DIR, dirs_exist_ok=True)
+
+    def _check_for_updates(self, newer_repo_version: str) -> bool:
         """
         Returns `True` if we should go out for an update.
         """
         try:
-            return self._get_last_local_commit_hash() != self._get_last_remote_commit_hash(self.git_repo)
+            return self._get_last_local_commit_hash() != newer_repo_version
         except InvalidGitRepositoryError:
             return True
 
@@ -99,25 +83,13 @@ class MelmanUpdater:
         """
         Repo.clone_from(repo_link, out_path)
 
-    @staticmethod
-    def _get_last_remote_commit_hash(repo_link: str) -> str:
-        front_page = requests.get(url=repo_link.removesuffix(GIT_SUFFIX),
-                                  headers=DEFAULT_HEADERS)
-
-        if front_page.status_code != 200:
-            raise MelmanUpdateError("Git repo does not seem reachable.")
-
-        hash_match = LAST_HASH_REGEX.search(front_page.text)
-
-        if hash_match is None:
-            raise MelmanUpdateError("Could not identify most recent hash in Git repo.")
-
-        return hash_match.group(1)
+    def _get_last_local_commit_hash(self) -> str:
+        return self._get_last_commit_hash(".")
 
     @staticmethod
-    def _get_last_local_commit_hash() -> str:
+    def _get_last_commit_hash(repo_path: str) -> str:
         """
         :raises InvalidGitRepositoryError: If a Git repo could not be identified.
         """
-        repo = Repo(search_parent_directories=True)
+        repo = Repo(path=repo_path, search_parent_directories=True)
         return cast(str, repo.head.object.hexsha)

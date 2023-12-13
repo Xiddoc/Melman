@@ -9,4 +9,4 @@ treated as magic values throughout the codebase.
 
 API_KEY_NAME = 'TELEGRAM_API_KEY'
 REMOTE_GIT_LINK = 'https://github.com/Xiddoc/Melman.git'
-CHECK_FOR_UPDATES_INTERVAL = 30  # 5 * 60
+CHECK_FOR_UPDATES_INTERVAL = 5 * 60
