@@ -44,7 +44,7 @@ class MelmanUpdater:
         :returns: `True` if Melman was updated.
         """
         logger.info("Checking if we should update...")
-        if False and not self._check_for_updates():  # TODO REMOVE FALSE
+        if not self._check_for_updates():
             logger.info("Running the latest version!")
             return False
 
