@@ -27,7 +27,7 @@ class StartMelman(MelmanArgumentHandler):
 
     @classmethod
     def handle(cls, *args: str, **kwargs: str) -> None:
-        melman = MelmanCore(TokenLoader.get_token())
+        melman = MelmanCore(TokenLoader.get_token(), REMOTE_GIT_LINK)
         melman.start()
 
 

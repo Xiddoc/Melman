@@ -5,16 +5,23 @@ The root handler for the Bot, which passes the rest of the logic onto other comp
 from telegram.ext import ApplicationBuilder, Defaults
 
 from lib.resolver.melman_types import MelmanApp
+from lib.updater.update_reloader import UpdateReloader
 from modules import MELMAN_MODULES
 
 
 class MelmanCore:
 
-    def __init__(self, api_token: str) -> None:
+    def __init__(self, api_token: str, update_git_repo_url: str) -> None:
         self._api_key = api_token
+        self.git_repo = update_git_repo_url
 
     def start(self) -> None:
+        self._start_auto_updater()
         self._start_telegram_application()
+
+    def _start_auto_updater(self) -> None:
+        reloader = UpdateReloader(self.git_repo)
+        reloader.start_async()
 
     def _start_telegram_application(self) -> None:
         defaults = Defaults(block=False)

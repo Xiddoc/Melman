@@ -43,15 +43,15 @@ class MelmanUpdater:
 
         :returns: `True` if Melman was updated.
         """
-        logger.info("Checking if we should update...")
+        logger.info("Checking if we should update")
         if not self._check_for_updates():
             logger.info("Running the latest version!")
             return False
 
-        logger.info("Updating Melman...")
+        logger.info("Updating Melman")
         self._download_to_project()
 
-        logger.info("Installing dependencies...")
+        logger.info("Installing dependencies")
         if not self._install_requirements():
             logger.error("Could not install dependencies to update Melman.")
             return False
