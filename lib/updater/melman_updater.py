@@ -54,7 +54,8 @@ class MelmanUpdater:
                                        stderr=subprocess.PIPE)
             process.communicate(timeout=PIP_TIMEOUT)
             return process.wait(PIP_TIMEOUT) == PIP_SUCCESS_CODE
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as exc:
+            logger.info(f"Unexpected dependency installation error: {exc}")
             return False
 
     def _update_if_available(self) -> bool:
@@ -105,4 +106,8 @@ class MelmanUpdater:
 
     @staticmethod
     def _move_env_to(tmp):
-        shutil.move(".env", tmp)
+        try:
+            shutil.move(".env", tmp)
+        except FileNotFoundError:
+            logger.warning("No .env file found. This isn't an error, "
+                           "but is suspicious since you should have a .env file on the disk.")
