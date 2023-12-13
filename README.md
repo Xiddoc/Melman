@@ -40,3 +40,6 @@ Add a `.env` file or add an environment variable with your Telegram bot key, gen
 ```.env
 TELEGRAM_API_KEY=12345:ABCDEFGGGGGGGGGGGGGGGGGGGGGG
 ```
+
+## License
+See the [LICENSE](LICENSE) file.
