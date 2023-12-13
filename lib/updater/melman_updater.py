@@ -53,9 +53,12 @@ class MelmanUpdater:
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
             process.communicate(timeout=PIP_TIMEOUT)
-            return process.wait(PIP_TIMEOUT) == PIP_SUCCESS_CODE
+            pip_error_code = process.wait(timeout=PIP_TIMEOUT)
+
+            logger.info(f"PIP finished installing depencies with code {pip_error_code}")
+            return pip_error_code == PIP_SUCCESS_CODE
         except subprocess.CalledProcessError as exc:
-            logger.info(f"Unexpected dependency installation error: {exc}")
+            logger.error(f"Unexpected dependency installation error: {exc}")
             return False
 
     def _update_if_available(self) -> bool:
