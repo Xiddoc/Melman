@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 import sys
@@ -14,7 +15,6 @@ logger = melman_logging.get_logger("MelmanUpdater")
 
 REQUIREMENTS_FILE = "requirements.txt"
 PIP_SUCCESS_CODE = 0
-PIP_TIMEOUT = 120
 
 
 @dataclass
@@ -49,14 +49,10 @@ class MelmanUpdater:
         :raises MelmanUpdateError: If we can't update the dependencies.
         """
         try:
-            process = subprocess.Popen(args=[sys.executable, "-m", "pip", "install", "-r", REQUIREMENTS_FILE],
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
-            process.communicate(timeout=PIP_TIMEOUT)
-            pip_error_code = process.wait(timeout=PIP_TIMEOUT)
+            exit_code = os.system(" ".join([sys.executable, "-m", "pip", "install", "-r", REQUIREMENTS_FILE]))
 
-            logger.info(f"PIP finished installing depencies with code {pip_error_code}")
-            return pip_error_code == PIP_SUCCESS_CODE
+            logger.info(f"PIP finished installing depencies with code {exit_code}")
+            return exit_code == PIP_SUCCESS_CODE
         except subprocess.CalledProcessError as exc:
             logger.error(f"Unexpected dependency installation error: {exc}")
             return False
