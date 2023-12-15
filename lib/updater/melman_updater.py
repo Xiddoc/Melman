@@ -3,6 +3,7 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import cast
 
@@ -114,4 +115,4 @@ class MelmanUpdater:
             logger.warning("No .env file found. This isn't an error, "
                            "but is suspicious since you should have a .env file on the disk.")
 
-        shutil.copytree(MODULES_PACKAGE, tmp)
+        shutil.copytree(MODULES_PACKAGE, Path(tmp) / MODULES_PACKAGE, dirs_exist_ok=True)
