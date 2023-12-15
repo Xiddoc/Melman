@@ -9,6 +9,7 @@ from typing import cast
 from git import Repo, InvalidGitRepositoryError
 
 from lib.commons import melman_logging
+from lib.commons.melman_config import MODULES_PACKAGE
 from melman import ROOT_DIR
 
 logger = melman_logging.get_logger("MelmanUpdater")
@@ -64,7 +65,7 @@ class MelmanUpdater:
         with TemporaryDirectory() as tmp:
             logger.info("Downloading remote repo")
             self._download_to(self.git_repo, tmp)
-            self._copy_env_to(tmp)
+            self._copy_backups_to(tmp)
             remote_version = self._get_last_commit_hash(tmp)
 
             if self._check_for_updates(remote_version):
@@ -104,9 +105,11 @@ class MelmanUpdater:
         return cast(str, repo.head.object.hexsha)
 
     @staticmethod
-    def _copy_env_to(tmp):
+    def _copy_backups_to(tmp):
         try:
             shutil.copy(".env", tmp)
         except FileNotFoundError:
             logger.warning("No .env file found. This isn't an error, "
                            "but is suspicious since you should have a .env file on the disk.")
+
+        shutil.copytree(MODULES_PACKAGE, tmp)
