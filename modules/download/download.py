@@ -118,6 +118,7 @@ async def download_music(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYP
     url = update.get_path().removeprefix('mp3 ')
 
     try:
+        await update.message.reply_text("Processing...")
         file = await _unsafe_download_media(url, convert_to_mp3=True)
 
         logger.info(f"Sending audio: '{url}'")
