@@ -12,5 +12,5 @@ REMOTE_GIT_LINK = 'https://github.com/Xiddoc/Melman.git'
 CHECK_FOR_UPDATES_INTERVAL = 5 * 60
 MODULES_PACKAGE = 'modules'
 
-AUTO_UPDATE_DEFAULT = False
+AUTO_UPDATE_DEFAULT = True
 AUTO_UPDATE_PARAM = 'autoupdate'
