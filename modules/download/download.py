@@ -47,7 +47,12 @@ def get_output_file_path(temp_dir: str, suffix: str = "") -> str:
 
 
 def get_youtube_config(temp_dir: str) -> Dict[str, Any]:
-    return {'outtmpl': str(get_download_file_prepath(temp_dir)), "quiet": True, "no_warnings": True}
+    return {
+        'outtmpl': str(get_download_file_prepath(temp_dir)),
+        "quiet": True,
+        "no_warnings": True,
+        "format": "worst"
+    }
 
 
 def compress_video(input_file: str, output_file: str) -> None:
