@@ -15,7 +15,15 @@ that are often triggered for all the functions at the same time. Melman puts an 
 Now, route-based modularity is achieved with a similar interface to that of your favorite
 web server.
 
-Let's see an example:
+## Examples
+
+All that talk is great and all, but let's see it for ourselves with some friendly
+snippets of code to guide us through the process of making our own Melman module. 
+
+### Basic module
+
+In the below code snippet, you can see just how easy it is to make an `echo` command
+which responds to all text (using the `.+` RegEx):
 
 ```python
 import re
