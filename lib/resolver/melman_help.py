@@ -15,7 +15,10 @@ class MelmanHelp:
         """
         Send the help message to the user.
         """
-        await update.message.reply_text(self.help_txt, parse_mode=self.text_type)
+        if update.message:
+            await update.message.reply_text(self.help_txt, parse_mode=self.text_type)
+        elif update.edited_message:
+            await update.message.reply_text(self.help_txt, parse_mode=self.text_type)
 
 
 class MelmanMDHelp(MelmanHelp):

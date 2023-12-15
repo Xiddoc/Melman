@@ -37,4 +37,4 @@ class MelmanModuleError(MelmanError):
 
 class MelmanInvalidEndpoint(MelmanModuleError):
     def __init__(self, module_name: str, endpoint: str):
-        super().__init__(module_name, f"Endpoint was accessed but does not exist: {endpoint}")
+        super().__init__(module_name, f"Endpoint was accessed but does not exist: `{endpoint}`")
