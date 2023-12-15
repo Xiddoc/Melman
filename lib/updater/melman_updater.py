@@ -73,6 +73,8 @@ class MelmanUpdater:
                 # Delete our files to overwrite them
                 shutil.rmtree(ROOT_DIR, ignore_errors=True)
                 shutil.copytree(tmp, ROOT_DIR, dirs_exist_ok=True)
+                # Update from now-deleted folder
+                os.chdir(".")
                 return True
 
             return False
