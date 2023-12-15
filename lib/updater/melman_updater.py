@@ -11,7 +11,7 @@ from git import Repo, InvalidGitRepositoryError
 
 from lib.commons import melman_logging
 from lib.commons.melman_config import MODULES_PACKAGE
-from melman import ROOT_DIR
+from melman import ROOT_DIR, ROOT_FOLDER
 
 logger = melman_logging.get_logger("MelmanUpdater")
 
@@ -75,7 +75,9 @@ class MelmanUpdater:
                 shutil.rmtree(ROOT_DIR, ignore_errors=True)
                 shutil.copytree(tmp, ROOT_DIR, dirs_exist_ok=True)
                 # Update from now-deleted folder
-                os.chdir(".")
+                # We do this in 2 commands since `os.chdir('.')` does not work
+                os.chdir('..')
+                os.chdir(ROOT_FOLDER)
                 return True
 
             return False
