@@ -43,6 +43,42 @@ it back to the screen. Similarly, all you have to do to create a command with Me
 register your route with `MelmanModule`, then describe your route- which even supports 
 Regular Expressions, as can be seen with the `re.compile(r".+")` expression.
 
+### Set default module behavior
+
+If a user only types your modules name without any parameters, then one of two things can happen:
+- You could resolve the empty route to your own function and handle it
+- You could leave it alone and instead set up a help menu to be printed
+
+In this example, we will see how to add a help menu to our previous `echo` command. 
+All that must be done is to add the `help` parameter to the module constructor:
+
+```python
+from lib import MelmanModule, MelmanMDHelp
+
+echo = MelmanModule("echo", help_msg=MelmanMDHelp("""
+**`echo`**
+Echos data back to the chat.
+
+Usage: `echo <TEXT>`
+"""))
+```
+
+In the above example, we selected the `MelmanMDHelp` source so that we can display MarkDown
+formatting for our help menu. However, we also have other "help types" that we can use, 
+such as plain old text using the `MelmanTextHelp` type:
+
+```python
+from lib import MelmanModule, MelmanTextHelp
+
+echo = MelmanModule("echo", help_msg=MelmanTextHelp("""
+The *echo* command.
+Echos whatever you say right back at it!
+"""))
+```
+
+This time, the asteriks in the help text (around the word "echo") will not be turned to markdown
+formatting for the text.
+
 ## Setup
 Add a `.env` file or add an environment variable with your Telegram bot key, generated via BotFather, like so:
 ```.env
