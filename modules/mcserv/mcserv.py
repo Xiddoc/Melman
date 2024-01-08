@@ -1,24 +1,18 @@
 """
-An echo command! Echo, echo, echo...
+Get the server IP
 """
-import re
 
 from telegram.ext import ContextTypes
 
 from lib import MelmanModule, MelmanUpdate, MelmanMDHelp
 
-echo = MelmanModule("echo", help_msg=MelmanMDHelp("""
-**`echo`**
-Echos data back to the chat.
-
-**Usage**
-```
-echo <TEXT>
-```
+mcserv = MelmanModule("mcserv", help_msg=MelmanMDHelp("""
+**`mcserv`**
+Gets the IP of the MC serv.
 """))
 
 
 # noinspection PyUnusedFunction
-@echo.route(re.compile(r".+"))
+@mcserv.route()
 async def index(update: MelmanUpdate, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(update.get_path())

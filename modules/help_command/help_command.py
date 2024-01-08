@@ -9,12 +9,12 @@ BASE_HELP_TEXT = """
 *Melman - Your bot for quick and simple tasks*
 
 To see all commands, type:
-```telegram
+```
 help
 ```
 
 To see information about a specific command, type:
-```telegram
+```
 help <COMMAND_NAME>
 ```
 
